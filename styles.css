@@ -1,0 +1,102 @@
+/* App controls never appear in printed PDFs. */
+:root { --ink:#152137; --muted:#607085; --navy:#132a49; --line:#dce3ed; }
+* { box-sizing:border-box; }
+html, body { margin:0; }
+body { font-family:Arial, Helvetica, sans-serif; color:var(--ink); background:#eff2f6; }
+button, select { font:inherit; }
+.app-header { background:#fff; border-bottom:1px solid #e4e9ee; }
+.app-header-inner { max-width:1510px; padding:19px 32px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:18px; }
+.identity { display:flex; align-items:center; gap:12px; }
+.monogram { width:44px;height:44px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700;letter-spacing:.5px; }
+.eyebrow { color:#708099;font-size:10px;font-weight:700;letter-spacing:.14em;margin:0 0 7px; }
+.identity h1 { font-size:20px;letter-spacing:-.6px;line-height:1.2;margin:0; }
+.identity h1 span { color:#8894a3; font-weight:400; }
+.app-header-note { color:#657389;font-size:12px;margin:0; }
+.workspace { max-width:1510px; display:grid; grid-template-columns:305px minmax(0,1fr); gap:28px; align-items:start; margin:0 auto; padding:30px 32px 56px; }
+.sidebar { position:sticky;top:22px;background:#fff;border:1px solid var(--line);padding:26px;border-radius:13px;box-shadow:0 6px 24px rgba(25,38,60,.035); }
+.sidebar-top { margin-bottom:29px; }
+.sidebar-top h2 { font-size:21px;letter-spacing:-.7px;line-height:1.2;margin:0 0 8px; }
+.muted { font-size:12px;line-height:1.65;color:#657389;margin:0; }
+.field { display:flex;flex-direction:column;gap:8px;margin-bottom:20px; }
+.field label { font-size:12px;font-weight:700; }
+.field select { width:100%;background:#fff;border:1px solid #cfd8e3; border-radius:7px; height:43px;padding:0 11px;font-size:13px;color:#192639; }
+.field select:focus-visible, .primary-button:focus-visible { outline:3px solid #8aaedb;outline-offset:2px; }
+.selection-summary { display:flex;flex-direction:column;gap:7px;padding:20px 0 22px;margin-top:3px;border-top:1px solid #e9edf2; }
+.selection-summary .eyebrow { margin-bottom:0; }
+.selection-summary strong { font-size:14px; }
+.selection-summary span { color:#66758b;font-size:11px; overflow-wrap:anywhere; }
+.primary-button { width:100%;display:flex;align-items:center;justify-content:space-between;border:0;border-radius:7px;background:#17375c;color:#fff;padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer; }
+.primary-button:hover { background:#244c7b; }
+.button-arrow {font-size:20px;font-weight:400;line-height:.8;}
+.print-hint { font-size:11px;line-height:1.6;color:#607085;margin:14px 0 24px; }
+.sidebar-bottom { border-top:1px solid #e9edf2;padding-top:17px; }
+.sidebar-bottom p:last-child { color:#607085;font-size:11px;line-height:1.7;margin:0; }
+.preview-area { min-width:0; }
+.preview-header { display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:35px;margin-bottom:18px;font-size:12px; }
+.preview-heading, .preview-state { display:flex;align-items:center;gap:9px; }
+.preview-heading strong { font-size:12px; }
+.preview-dot { width:7px;height:7px;background:#429b75;border-radius:50%; }
+.preview-caption, .preview-state {color:#738198;font-size:11px;}
+.page-stack {display:flex;align-items:center;flex-direction:column;gap:24px;}
+.paper-frame {position:relative;width:calc(210mm * var(--scale,1));height:calc(297mm * var(--scale,1));flex:none;}
+.paper {position:absolute;left:0;top:0;transform:scale(var(--scale,1));transform-origin:top left;}
+.paper-frame::after {content:attr(data-page-label);position:absolute;right:0;bottom:-18px;color:#7b8798;font-size:11px;}
+
+/* ========================================================================
+   ATS PAPER TYPOGRAPHY. Same DOM and CSS in the preview and printed PDF.
+   No columns, tables, text-as-images, icons, skill bars, or fixed info boxes.
+   ======================================================================== */
+.paper {width:210mm;height:297mm;padding:15mm;background:#fff;color:#101010;font:11pt/1.42 Arial,Helvetica,sans-serif;box-shadow:0 9px 36px rgba(19,35,54,.13);}
+.paper-content {width:100%;height:100%;overflow:visible;}
+.paper .cv-header { margin:0 0 5.1mm; }
+.paper .cv-name { margin:0 0 .8mm;font-size:20pt;line-height:1.12;font-weight:700;letter-spacing:-.35pt; }
+.paper .cv-target-role { margin:0 0 2.5mm;font-size:11pt;line-height:1.3;font-weight:700; }
+.paper .cv-contact { margin:0;font-size:10.4pt;line-height:1.4;overflow-wrap:anywhere; }
+.paper .cv-section { margin:4.8mm 0 0; }
+.paper h2 {font-size:11.5pt;line-height:1.23;font-weight:700;margin:0 0 2.3mm;padding:0 0 1.25mm;border-bottom:0.7pt solid #121212;}
+.paper p {margin:0;}
+.paper .cv-summary {line-height:1.42;}
+.paper .skill-line {margin:0 0 1.7mm;line-height:1.42;}
+.paper .skill-line:last-child {margin-bottom:0;}
+.paper .skill-line strong {font-weight:700;}
+.paper .cv-entry { margin:0 0 3.4mm;break-inside:avoid;page-break-inside:avoid; }
+.paper .cv-entry:last-child { margin-bottom:0; }
+.paper .entry-heading, .paper .entry-subline {display:flex;justify-content:space-between;gap:7mm;align-items:baseline;}
+.paper .entry-heading {font-size:10.85pt;line-height:1.3;}
+.paper .entry-heading .entry-main {font-weight:700;}
+.paper .entry-date {white-space:nowrap;font-size:10pt;}
+.paper .entry-subline {font-size:10.4pt;line-height:1.32;margin-top:.2mm;}
+.paper .entry-title {font-weight:400;}
+.paper .entry-location {white-space:nowrap;}
+.paper ul {margin:1.35mm 0 0;padding-left:5.2mm;}
+.paper li {margin:0 0 1.05mm;padding-left:.4mm;line-height:1.4;}
+.paper li:last-child {margin-bottom:0;}
+.paper .project-entry > .entry-main {display:block;font-weight:700;line-height:1.32;}
+.paper .project-entry ul {margin-top:.75mm;}
+.paper .project-tech {margin-top:.85mm;font-size:10.3pt;line-height:1.33;}
+.paper .project-tech strong {font-weight:700;}
+.paper .education-entry {margin-bottom:2.8mm;}
+.paper .education-entry .entry-subline {margin-top:.2mm;}
+.paper .cv-languages {line-height:1.42;}
+/* Visually cleaner on screen without changing document text or pagination. */
+@media (max-width:1100px) { .workspace {grid-template-columns:270px minmax(0,1fr);gap:20px;padding:23px 18px 45px;} .sidebar{padding:21px;} }
+@media (max-width:840px) { .workspace{grid-template-columns:1fr;} .sidebar{position:static;display:grid;grid-template-columns:1fr 1fr;column-gap:18px;} .sidebar-top,.selection-summary,.print-hint,.sidebar-bottom{grid-column:1/-1;} .sidebar-top{margin-bottom:22px;} .primary-button{grid-column:1/-1;} .app-header-note{display:none;} }
+@media (max-width:480px) { .app-header-inner{padding:16px;} .identity h1{font-size:16px;} .workspace{padding:16px 10px 32px;} .sidebar{padding:18px;display:block;} .preview-caption{display:none;} .page-stack{gap:18px;} }
+
+/* Browser-generated date/URL decorations use print margins. Since our pages
+   contain their own 15 mm white inset, the printable area is exactly A4. */
+@page {size:A4;margin:0;}
+@media print {
+  html,body {width:210mm!important;height:auto!important;margin:0!important;padding:0!important;background:#fff!important;}
+  .app-only {display:none!important;}
+  .workspace {display:block!important;width:210mm!important;max-width:none!important;margin:0!important;padding:0!important;}
+  .preview-area,.page-stack {display:block!important;width:210mm!important;margin:0!important;padding:0!important;}
+  .paper-frame {display:block!important;position:static!important;width:210mm!important;height:297mm!important;margin:0!important;padding:0!important;overflow:visible!important;break-after:page;page-break-after:always;}
+  .paper-frame:last-child {break-after:auto;page-break-after:auto;}
+  .paper-frame::after {display:none!important;}
+  .paper {position:static!important;display:block!important;transform:none!important;width:210mm!important;height:297mm!important;padding:15mm!important;box-shadow:none!important;overflow:hidden!important;}
+  .paper-content {overflow:hidden!important;}
+  .paper h2 {break-after:avoid;page-break-after:avoid;}
+  .paper .cv-entry {break-inside:avoid;page-break-inside:avoid;}
+  * {-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Six clean, ATS-friendly CVs for Mohammed Ouali. One-column A4 PDF exports with real text.">
+  <title>Mohammed_Ouali_Dev_FR</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="cv-data.js"></script>
+</head>
+<body>
+  <header class="app-header app-only">
+    <div class="app-header-inner">
+      <div class="identity">
+        <span class="monogram" aria-hidden="true">MO</span>
+        <div>
+          <p class="eyebrow">CV BUILDER / ATS EDITION</p>
+          <h1>Mohammed Ouali <span>CV Studio</span></h1>
+        </div>
+      </div>
+      <p class="app-header-note">6 tailored versions <span aria-hidden="true">·</span> FR &amp; EN <span aria-hidden="true">·</span> A4 PDF</p>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="sidebar app-only" aria-label="CV preferences">
+      <div class="sidebar-top">
+        <p class="eyebrow">01 / CUSTOMIZE</p>
+        <h2>Build your CV</h2>
+        <p class="muted">Select a language and role. The pages below are the exact layout used for PDF export.</p>
+      </div>
+
+      <div class="field">
+        <label for="language">Language</label>
+        <select id="language">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="profile">Target profile</label>
+        <select id="profile">
+          <option value="dev">Full-Stack Developer</option>
+          <option value="qa">QA / Software Tester</option>
+          <option value="hybrid">Development + QA</option>
+        </select>
+      </div>
+
+      <div class="selection-summary">
+        <p class="eyebrow">CURRENT DOCUMENT</p>
+        <strong id="current-role">Développeur Full-Stack</strong>
+        <span id="current-file">Mohammed_Ouali_Dev_FR.pdf</span>
+        <span id="current-pages">Calculating pages…</span>
+      </div>
+
+      <button class="primary-button" id="export-pdf" type="button">
+        <span>Export PDF</span>
+        <span aria-hidden="true" class="button-arrow">↗</span>
+      </button>
+      <p class="print-hint">In the print dialog, choose <strong>Save as PDF</strong>, <strong>A4</strong>, <strong>100% scale</strong> and turn off <strong>Headers and footers</strong> if enabled. No other software needed.</p>
+
+      <div class="sidebar-bottom">
+        <p class="eyebrow">DESIGNED FOR ATS</p>
+        <p>One column · Plain text · Arial · 11 pt body · 15 mm page margins</p>
+      </div>
+    </aside>
+
+    <section class="preview-area" aria-label="Live PDF-ready CV pages">
+      <div class="preview-header app-only">
+        <div class="preview-heading">
+          <span class="preview-dot" aria-hidden="true"></span>
+          <strong>Document preview</strong>
+          <span class="preview-caption">True A4 pages</span>
+        </div>
+        <div class="preview-state"><span id="version-indicator">01 / 06</span><span class="preview-separator">·</span><span id="page-indicator">–</span></div>
+      </div>
+      <div id="page-stack" class="page-stack" aria-label="Resume"></div>
+    </section>
+  </main>
+<script>
+/* No dependencies or external connections. One resume data object per role/language. */
+(() => {
+  'use strict';
+  const cvData = window.CV_DATA;
+  const language = document.getElementById('language');
+  const profile = document.getElementById('profile');
+  const pages = document.getElementById('page-stack');
+  const exportButton = document.getElementById('export-pdf');
+  const fileLabel = document.getElementById('current-file');
+  const roleLabel = document.getElementById('current-role');
+  const pagesLabel = document.getElementById('current-pages');
+  const indicator = document.getElementById('page-indicator');
+  const version = document.getElementById('version-indicator');
+  const preview = document.querySelector('.preview-area');
+
+  const labels = {
+    fr: {profile:'Profil',skills:'Compétences',experience:'Expérience Professionnelle',projects:'Projets',education:'Formation',languages:'Langues',technologies:'Technologies'},
+    en: {profile:'Profile',skills:'Skills',experience:'Experience',projects:'Projects',education:'Education',languages:'Languages',technologies:'Technologies'}
+  };
+  const suffix = {dev:'Dev',qa:'QA',hybrid:'Hybrid'};
+  const el = (tag, className, content) => {
+    const item = document.createElement(tag);
+    if (className) item.className = className;
+    if (content !== undefined) item.textContent = content;
+    return item;
+  };
+  const makeSection = (name, sectionId) => {
+    const section = el('section','cv-section');
+    section.dataset.section = sectionId;
+    section.appendChild(el('h2','',name));
+    return section;
+  };
+  const list = items => {
+    const ul = el('ul');
+    items.forEach(value => ul.appendChild(el('li','',value)));
+    return ul;
+  };
+  const line = (cls, left, right) => {
+    const container = el('div',cls);
+    container.append(el('span',cls === 'entry-heading' ? 'entry-main':'entry-title',left), el('span',cls === 'entry-heading' ? 'entry-date':'entry-location',right));
+    return container;
+  };
+
+  function renderContent(data, languageCode) {
+    const h = labels[languageCode];
+    const header = el('header','cv-header');
+    header.append(el('h1','cv-name',data.name),el('p','cv-target-role',data.targetRole));
+    header.appendChild(el('p','cv-contact',[data.contact.email,data.contact.phone,data.contact.website].filter(Boolean).join(' | ')));
+
+    const summary = makeSection(h.profile,'profile');
+    summary.appendChild(el('p','cv-summary',data.profile));
+
+    const skills = makeSection(h.skills,'skills');
+    data.skills.forEach(skill => {
+      const p = el('p','skill-line');
+      p.append(el('strong','',skill.label+': '),document.createTextNode(skill.items));
+      skills.appendChild(p);
+    });
+
+    const experience = makeSection(h.experience,'experience');
+    data.experience.forEach(job => {
+      const entry = el('div','cv-entry experience-entry');
+      entry.append(line('entry-heading',job.organization,job.date),line('entry-subline',job.title,job.location),list(job.bullets));
+      experience.appendChild(entry);
+    });
+
+    const projects = makeSection(h.projects,'projects');
+    data.projects.forEach(project => {
+      const entry = el('div','cv-entry project-entry');
+      entry.append(el('strong','entry-main',project.name),list(project.bullets));
+      const tech = el('p','project-tech');
+      tech.append(el('strong','',h.technologies+': '),document.createTextNode(project.technologies));
+      entry.appendChild(tech);
+      projects.appendChild(entry);
+    });
+
+    const education = makeSection(h.education,'education');
+    data.education.forEach(school => {
+      const entry = el('div','cv-entry education-entry');
+      entry.append(line('entry-heading',school.institution,school.date),line('entry-subline',school.qualification,school.location));
+      education.appendChild(entry);
+    });
+
+    const languages = makeSection(h.languages,'languages');
+    languages.appendChild(el('p','cv-languages',data.languages.join(' | ')));
+    return [header,summary,skills,experience,...(data.projects.length ? [projects] : []),education,languages];
+  }
+
+  function newPage() {
+    const frame = el('div','paper-frame');
+    const sheet = el('div','paper');
+    const content = el('div','paper-content');
+    sheet.appendChild(content);
+    frame.appendChild(sheet);
+    pages.appendChild(frame);
+    return content;
+  }
+
+  function isOverfull(content) {
+    // A tiny allowance for CSS pixels rounding to integer scrollHeight.
+    return content.scrollHeight > content.clientHeight + 1;
+  }
+
+  function paginate(blocks) {
+    pages.replaceChildren();
+    let content = newPage();
+    for (const source of blocks) {
+      const whole = source.cloneNode(true);
+      content.appendChild(whole);
+      if (!isOverfull(content)) continue;
+      whole.remove();
+      // A projects section is better kept together when the first page is
+      // already substantially filled. Unlike a blanket page-break rule, this
+      // considers the actual rendered height and avoids an early blank area.
+      if (source.dataset.section === 'projects') {
+        const existing = content.lastElementChild;
+        const used = existing ? existing.getBoundingClientRect().bottom - content.getBoundingClientRect().top : 0;
+        if (used > content.clientHeight * 0.69) {
+          const previous = content;
+          content = newPage();
+          content.appendChild(source.cloneNode(true));
+          if (!isOverfull(content)) continue;
+          content.lastElementChild.remove();
+          content.parentElement.parentElement.remove();
+          content = previous;
+        }
+      }
+      // Single paragraph/heading sections never need splitting.
+      if (!source.matches('.cv-section') || source.children.length < 3) {
+        content = newPage();
+        content.appendChild(source.cloneNode(true));
+        continue;
+      }
+      const heading = source.firstElementChild;
+      let chunk = null;
+      for (const entry of Array.from(source.children).slice(1)) {
+        if (!chunk) {
+          chunk = el('section','cv-section');
+          chunk.dataset.section = source.dataset.section;
+          chunk.appendChild(heading.cloneNode(true));
+          content.appendChild(chunk);
+        }
+        const clone = entry.cloneNode(true);
+        chunk.appendChild(clone);
+        if (isOverfull(content)) {
+          clone.remove();
+          if (chunk.children.length === 1) chunk.remove();
+          content = newPage();
+          chunk = el('section','cv-section');
+          chunk.dataset.section = source.dataset.section;
+          chunk.append(heading.cloneNode(true),clone);
+          content.appendChild(chunk);
+          if (isOverfull(content)) console.warn('Individual CV entry is too tall for one page:',entry.textContent);
+        }
+      }
+    }
+    for (const [index, frame] of [...pages.children].entries()) frame.dataset.pageLabel = `PAGE ${index+1} / ${pages.children.length}`;
+    document.documentElement.dataset.pageCount = String(pages.children.length);
+  }
+
+  function scalePreview() {
+    const available = Math.max(250,preview.clientWidth - 2);
+    // The paper is always 210 x 297 mm. Only its on-screen transform changes.
+    const originalWidth = pages.firstElementChild?.querySelector('.paper')?.offsetWidth || 794;
+    const scale = Math.min(1,available/originalWidth);
+    pages.style.setProperty('--scale',String(scale));
+  }
+
+  function render() {
+    const lang = language.value;
+    const type = profile.value;
+    const cv = cvData?.[lang]?.[type];
+    if (!cv) {pages.textContent='CV data could not be loaded.';return;}
+    document.documentElement.lang = lang;
+    const basename=`Mohammed_Ouali_${suffix[type]}_${lang.toUpperCase()}`;
+    document.title = basename;
+    fileLabel.textContent = basename+'.pdf';
+    roleLabel.textContent = cv.targetRole;
+    version.textContent = String((lang==='en'?3:0)+['dev','qa','hybrid'].indexOf(type)+1).padStart(2,'0')+' / 06';
+    paginate(renderContent(cv,lang));
+    const count = pages.childElementCount;
+    pagesLabel.textContent = `${count} A4 ${count===1?'page':'pages'} · 11 pt body`;
+    indicator.textContent = `${count} ${count===1?'page':'pages'}`;
+    scalePreview();
+  }
+  language.addEventListener('change',render);
+  profile.addEventListener('change',render);
+  window.addEventListener('resize',scalePreview);
+  exportButton.addEventListener('click',() => {document.title = `Mohammed_Ouali_${suffix[profile.value]}_${language.value.toUpperCase()}`; window.print();});
+  render();
+})();
+
+</script>
+</body>
+</html>
